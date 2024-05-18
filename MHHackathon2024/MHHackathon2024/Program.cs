@@ -1,6 +1,7 @@
 using DataAccess.Data;
 using DataAccess.Models;
 using MHHackathon2024.Components;
+using MHHackathon2024.ML;
 using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.Components.Server;
 using Microsoft.AspNetCore.Identity;
@@ -12,36 +13,42 @@ builder.Services.AddRazorComponents()
     .AddInteractiveWebAssemblyComponents()
     .AddInteractiveServerComponents();
 
+builder.Services.AddControllers();
+
 builder.Services.AddSingleton<IDatabase, Database>();
 builder.Services.AddSingleton<IPasswordHasher, PasswordHasher>();
 builder.Services.AddSingleton<ITagData, TagData>();
 builder.Services.AddSingleton<IPostData, PostData>();
 builder.Services.AddSingleton<IUserStore<User>, UserData>();
+builder.Services.AddSingleton<ISummerProgramData, SummerProgramData>();
+builder.Services.AddSingleton<IModelReader, ModelReader>();
+builder.Services.AddScoped<SignInManager<User>>();
 
 builder.Services.AddOptions();
 
 builder.Services.AddScoped<AuthenticationStateProvider, ServerAuthenticationStateProvider>();
 
-builder.Services.AddAuthentication();
+builder.Services.AddOptions();
+builder.Services.AddAuthentication()
+    .AddCookie(IdentityConstants.ApplicationScheme);
 
-builder.Services.AddAuthorizationBuilder()
-    .AddPolicy("Admin", policy => policy.RequireRole("Admin"));
+builder.Services.AddAuthorization();
 
-builder.Services.AddIdentityCore<User>()
-    .AddUserStore<UserData>()
-    .AddSignInManager<SignInManager<User>>();
-
-builder.Services.ConfigureApplicationCookie(options => {
-
+builder.Services.ConfigureApplicationCookie(options =>
+{
     options.LoginPath = "/users/sign-in";
     options.LogoutPath = "/users/sign-out";
-    options.AccessDeniedPath = "/users/sign-in";
     options.SlidingExpiration = true;
     options.ExpireTimeSpan = TimeSpan.FromDays(3);
     options.Cookie.IsEssential = true;
     options.Cookie.SecurePolicy = CookieSecurePolicy.Always;
 });
 
+builder.Services.AddIdentityCore<User>()
+    .AddUserStore<UserData>()
+    .AddSignInManager<SignInManager<User>>();
+
+builder.Services.AddCascadingAuthenticationState();
 
 var app = builder.Build();
 
@@ -71,5 +78,7 @@ app.UseAntiforgery();
 app.MapRazorComponents<App>()
     .AddInteractiveServerRenderMode()
     .AddInteractiveWebAssemblyRenderMode();
+
+app.MapControllers();
 
 app.Run();

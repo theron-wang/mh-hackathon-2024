@@ -1,10 +1,20 @@
-﻿<div class="flex-1 sticky flex justify-between bg-gray-100 px-12 py-2">
+﻿@using Microsoft.AspNetCore.Components.Authorization
+<div class="flex-1 sticky flex justify-between bg-gray-100 px-12 py-2">
     <a href="/">
         <img src="/logo.png" class="h-16 w-16" />
     </a>
     <div class="flex items-center tracking-wide">
         <a class="mr-8" href="/programs">Programs</a>
         <a class="mr-8" href="/research">Research</a>
-        <a href="/research" class="my-auto h-min rounded-full bg-teal-600 px-4 py-2 text-center text-white">Join</a>
+        <AuthorizeView Context="user">
+            <Authorized>
+                <span class="mr-4 flex h-8 w-8 items-center justify-center rounded-full bg-theme text-center text-white">@user.User.Identity.Name[0]</span>
+                @user.User.Identity.Name
+                <a href="/users/sign-out" class="my-auto ml-4 h-min rounded-full bg-theme px-4 py-2 text-center text-white">Sign Out</a>
+            </Authorized>
+            <NotAuthorized>
+                <a href="/users/sign-in" class="my-auto h-min rounded-full bg-theme px-4 py-2 text-center text-white">Join</a>
+            </NotAuthorized>
+        </AuthorizeView>
     </div>
 </div>

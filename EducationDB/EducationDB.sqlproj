@@ -79,6 +79,9 @@
     <Build Include="StoredProcedures\spPosts_EditResponse.sql" />
     <Build Include="StoredProcedures\spPosts_DeleteResponse.sql" />
     <Build Include="StoredProcedures\spTags_GetAll.sql" />
-    <Build Include="StoredProcedures\spTag_Create.sql" />
+    <Build Include="StoredProcedures\spTags_Create.sql" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="EducationDB.publish.xml" />
   </ItemGroup>
 </Project>

@@ -36,6 +36,14 @@ public class Database(IConfiguration config) : IDatabase
         return result.ToList();
     }
 
+    public async Task<List<T>> GetAsync<T, TFirst, TSecond, TThird, TFour>(string storedProcedure, object parameters, Func<TFirst, TSecond, TThird, TFour, T> map, string splitOn = "Id")
+    {
+        using var connection = new SqlConnection(_config.GetConnectionString("Default"));
+
+        var result = await connection.QueryAsync(storedProcedure, map, parameters, splitOn: splitOn, commandType: CommandType.StoredProcedure);
+        return result.ToList();
+    }
+
     public async Task Set(string procedure, object parameters)
     {
         using var connection = new SqlConnection(_config.GetConnectionString("Default"));

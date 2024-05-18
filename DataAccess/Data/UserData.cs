@@ -17,7 +17,7 @@ public class UserData(IDatabase dataAccess) : IUserStore<User>
             return IdentityResult.Failed(new IdentityError { Code = "EmailExists", Description = "Email already exists" });
         }
 
-        await _dataAccess.Set("spUsers_Create", new { user.Username, user.Email, user.PasswordHash, IndustryId = user.Industry!.Id });
+        await _dataAccess.Set("spUsers_Create", new { user.Username, user.Email, user.PasswordHash, Industry = user.Industry!.Id });
 
         return IdentityResult.Success;
     }

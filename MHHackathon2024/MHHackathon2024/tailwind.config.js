@@ -3,13 +3,16 @@ module.exports = {
     content: [
         "./Components/**/*.razor"
     ],
-  theme: {
-      extend: {
-          colors: {
-              theme: '#165f65'
-          }
-      },
-  },
-  plugins: [],
+    theme: {
+        fontFamily: {
+            'main': ["Fira Sans", 'sans-serif']
+        },
+        extend: {
+            colors: {
+                theme: 'rgb(17 28 92)'
+            }
+        },
+    },
+    plugins: [],
 }
 

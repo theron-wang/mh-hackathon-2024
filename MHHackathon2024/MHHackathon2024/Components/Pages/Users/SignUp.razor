@@ -1,0 +1,131 @@
+﻿@page "/users/sign-up"
+@using DataAccess.Data
+@using DataAccess.Models
+@using DataValidation
+@using MHHackathon2024.ML
+@using Microsoft.AspNetCore.Identity
+
+@inject IUserStore<User> userStore
+@inject NavigationManager navManager
+@inject IPasswordHasher passwordHasher
+@inject ITagData tagData
+@inject IModelReader modelReader
+
+@rendermode InteractiveServer
+
+<div class="p-8">
+    <h1 class="mb-4 text-3xl">Join</h1>
+
+    <div class="flex flex-col rounded-lg border p-8 shadow-lg">
+        <EditForm Model="Model" FormName="newUser" OnValidSubmit="Register">
+            @if (fail)
+            {
+                <div class="mb-4 rounded-lg border border-red-900 bg-red-100 p-2 text-red-900">
+                    Username is already taken.
+                </div>
+            }
+
+            <DataAnnotationsValidator />
+            <ValidationSummary />
+
+            <div class="mb-4">
+                <label for="username">Username</label>
+                <InputText class="ring-offset-2 mt-2 w-full rounded-full border border-gray-600 p-2 px-4 outline-none transition focus:ring-4 focus:ring-theme/50"
+                           @bind-Value="Model.Name" id="username" />
+            </div>
+            <div class="mb-4">
+                <label for="email">Email</label>
+                <InputText class="ring-offset-2 mt-2 w-full rounded-full border border-gray-600 p-2 px-4 outline-none transition focus:ring-4 focus:ring-theme/50"
+                           @bind-Value="Model.Email" type="email" id="email" />
+            </div>
+            <div class="mb-4">
+                <label for="password">Password</label>
+                <InputText class="ring-offset-2 mt-2 w-full rounded-full border border-gray-600 p-2 px-4 outline-none transition focus:ring-4 focus:ring-theme/50"
+                           @bind-Value="Model.Password" id="password" type="password" />
+            </div>
+            <div class="mb-4">
+                <label for="cpassword">Confirm password</label>
+                <InputText class="ring-offset-2 mt-2 w-full rounded-full border border-gray-600 p-2 px-4 outline-none transition focus:ring-4 focus:ring-theme/50"
+                           @bind-Value="Model.ConfirmPassword" id="cpassword" type="password" />
+            </div>
+            @for (int i = 0; i < skills.Count; i++)
+            {
+                int x = i;
+                <div class="mb-4">
+                    <label for="cpassword">What are your @(skills[x])?</label>
+                    <div class="mt-2 flex justify-between text-center">
+                        <InputRadioGroup Name="@("skills-" + x)" TValue="int" Value="Model.Skills[x]" ValueChanged="(int v) => { Model.Skills[x] = v; }" ValueExpression="() => Model.Skills[x]">
+                            @for (int j = 1; j <= 10; j++)
+                            {
+                                int y = j;
+                                <label class="ring-offset-2 cursor-pointer rounded-full px-4 transition focus:ring-4 focus:ring-theme/50">
+                                    <InputRadio class="ring-offset-2 cursor-pointer rounded-full transition focus:ring-4 focus:ring-theme/50" Value="y" />
+                                    <br />
+                                    @y
+                                </label>
+                            }
+                        </InputRadioGroup>
+                    </div>
+                </div>
+            }
+            <div class="mb-4">
+                <button class="my-auto w-full rounded-full bg-theme px-4 py-2 text-center text-white" type="submit">Sign Up</button>
+            </div>
+        </EditForm>
+    </div>
+</div>
+
+@code {
+    public SignUpModel Model { get; set; } = new();
+    private bool fail;
+    private List<string> skills = [
+    "mathematics skills",
+    "science skills",
+    "literature skills",
+    "history skills",
+    "art skills",
+    "computer science skills",
+    "analytical skills",
+    "creative skills",
+    "leadership skills",
+    "technical skills",
+    "communication skills",
+    "interests in an office job",
+    "interests in outdoor work",
+    "interests in laboratory work",
+    "interests in remote work",
+    "interests in working with people",
+    "interests in working with technology",
+    "interests in working with nature"
+    ];
+
+    protected override void OnInitialized()
+    {
+        Model.Skills = skills.Select(s => 1).ToList();
+    }
+
+    private async Task Register()
+    {
+        if (await userStore.FindByNameAsync(Model.Name!, default) is not null)
+        {
+            fail = true;
+            return;
+        }
+
+        var tags = await tagData.GetAllTags();
+
+        var industry = await modelReader.GetRecommendedField(Model.Skills);
+
+        var user = new User
+        {
+            Username = Model.Name,
+            Email = Model.Email,
+            PasswordHash = passwordHasher.HashPassword(Model.Password!),
+            Industry = tags.First(t => t.Name!.Equals(industry)) 
+        };
+
+        await userStore.CreateAsync(user, default);
+
+        navManager.NavigateTo("/users/sign-in");
+    }
+}

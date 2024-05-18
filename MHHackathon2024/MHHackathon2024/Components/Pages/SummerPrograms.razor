@@ -1,0 +1,80 @@
+﻿@page "/programs"
+@using DataAccess.Data
+@using DataAccess.Models
+@using MHHackathon2024.Components.Fragments
+
+@inject ISummerProgramData summerProgramData
+
+@rendermode InteractiveServer
+
+<div class="w-full bg-gray-100 px-12 pb-8 pt-4">
+    <h1 class="mb-4 text-3xl">Summer Programs</h1>
+
+    <div class="flex items-center">
+        <div class="border-8 w-[400px] mr-8 rounded-full border-white">
+            <input class="ring-offset-2 w-full rounded-full border border-gray-600 p-4 outline-none transition focus:ring-4 focus:ring-theme/50"
+                   placeholder="Enter summer program" @bind="summerProgramSearch" @bind:event="oninput" @bind:after="Filter" />
+        </div>
+
+        <div>
+            <span class="text-black/75 text-sm">Grade</span>
+            <div class="flex items-center">
+                <input class="ring-offset-2 mr-2 w-20 rounded-full border border-gray-600 px-2 py-1 outline-none transition focus:ring-4 focus:ring-theme/50"
+                       placeholder="Ex: 9" type="number" step="1" min="1" @bind="minGrade" @bind:event="oninput" @bind:after="Filter" />
+                &mdash;
+                <input class="ring-offset-2 ml-2 mr-8 w-20 rounded-full border border-gray-600 px-2 py-1 outline-none transition focus:ring-4 focus:ring-theme/50"
+                       placeholder="Ex: 12" type="number" step="1" min="1" @bind="maxGrade" @bind:event="oninput" @bind:after="Filter" />
+            </div>
+        </div>
+
+        <div>
+            <span class="text-black/75 text-sm">Cost</span>
+            <div class="flex items-center">
+                <input class="ring-offset-2 mr-2 w-28 rounded-full border border-gray-600 px-2 py-1 outline-none transition focus:ring-4 focus:ring-theme/50"
+                       placeholder="Ex: $0" type="number" step="1" min="0" @bind="minCost" @bind:event="oninput" @bind:after="Filter" />
+                &mdash;
+                <input class="ring-offset-2 ml-2 mr-8 w-28 rounded-full border border-gray-600 px-2 py-1 outline-none transition focus:ring-4 focus:ring-theme/50"
+                       placeholder="Ex: $6000" type="number" step="1" min="0" @bind="maxCost" @bind:event="oninput" @bind:after="Filter" />
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="p-8">
+    @if (displayPrograms is not null)
+    {
+        @foreach (var program in displayPrograms)
+        {
+            <SummerProgramCard Program="program" />
+        }
+    }
+</div>
+
+
+@code {
+    private string? summerProgramSearch;
+    private int? minGrade;
+    private int? maxGrade;
+    private double? minCost;
+    private double? maxCost;
+
+    private List<SummerProgram>? summerPrograms;
+    private IEnumerable<SummerProgram>? displayPrograms;
+
+    protected override void OnInitialized()
+    {
+        summerPrograms = summerProgramData.GetSummerPrograms();
+        Filter();
+    }
+
+    private void Filter()
+    {
+        displayPrograms = summerPrograms!.Where(s =>
+            (string.IsNullOrWhiteSpace(summerProgramSearch) || s.Name!.Contains(summerProgramSearch, StringComparison.OrdinalIgnoreCase)) &&
+            (minGrade is null || s.Grades!.Min() >= minGrade) &&
+            (maxGrade is null || s.Grades!.Max() <= maxGrade) &&
+            (minCost is null || s.Cost >= minCost) &&
+            (maxCost is null || s.Cost <= maxCost)
+        );
+    }
+}

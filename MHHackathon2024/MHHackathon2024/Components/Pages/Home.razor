@@ -1,7 +1,97 @@
 ﻿@page "/"
+@using DataAccess.Data
+@using DataAccess.Models
+@using MHHackathon2024.Components.Fragments
+@using Microsoft.AspNetCore.Components.Authorization
+@using Microsoft.AspNetCore.Identity
+
+@inject IPostData postData
+
+@inject IUserStore<User> userStore
+
+@rendermode InteractiveServer
 
 <PageTitle>Home</PageTitle>
 
-<h1>Hello, world!</h1>
+<div class="p-8">
+    <div class="mb-4 flex items-center justify-between">
+        <h1 class="mb-2 text-3xl">Posts</h1>
+        @if (user is not null)
+        {
+            <div>
+                Showing your recommended interests: @user.Industry?.Name
+            </div>
+        }
+        <AuthorizeView>
+            @if (!sharing)
+            {
+                <button class="rounded-full bg-theme px-4 py-2 text-center text-white" @onclick="() => { sharing = true; }">Share</button>
+            }
+        </AuthorizeView>
+    </div>
+    <AuthorizeView>
+        @if (sharing)
+        {
+            <div class="rounded-lg border p-8 shadow-lg">
+                <textarea class="ring-offset-2 mb-4 mt-2 w-full rounded-lg border border-gray-600 p-4 outline-none transition focus:ring-4 focus:ring-theme/50" @bind="postContent" placeholder="Share your experiences..."></textarea>
+                <button class="mr-4 rounded-full bg-theme px-4 py-2 text-center text-white" @onclick="Post">Post</button>
+                <button class="px-4 py-2 text-center text-theme" @onclick="() => { sharing = false; }">Cancel</button>
+            </div>
+        }
+    </AuthorizeView>
 
-Welcome to your new app.
+    @if (posts is not null)
+    {
+        @foreach (var post in posts)
+        {
+            <PostCard Post="post" OnDelete="Delete" OnEdit="Edit" />
+        }
+    }
+</div>
+
+@code {
+    [CascadingParameter]
+    public Task<AuthenticationState>? AuthState { get; set; }
+
+    private List<Post>? posts;
+    private User? user;
+
+    private string? postContent;
+    private bool sharing;
+
+    protected override async Task OnInitializedAsync()
+    {
+        posts = await postData.GetPosts();
+
+        var auth = await AuthState!;
+        user = await userStore.FindByNameAsync(auth.User.Identity!.Name!, default);
+    }
+
+    private async Task Post()
+    {
+        var post = new Post()
+            {
+                Text = postContent,
+                UserId = user!.Id,
+                User = user,
+                Responses = new List<Response>()
+            };
+
+        await postData.CreatePost(post);
+        posts!.Insert(0, post);
+
+        sharing = false;
+        postContent = "";
+    }
+
+    private void Delete(Post post)
+    {
+        posts!.Remove(post);
+        StateHasChanged();
+    }
+
+    private void Edit(Post post)
+    {
+        StateHasChanged();
+    }
+}

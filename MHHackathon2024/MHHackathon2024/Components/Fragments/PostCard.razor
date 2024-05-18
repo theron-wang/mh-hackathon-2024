@@ -1,0 +1,120 @@
+﻿@using DataAccess.Data
+@using DataAccess.Models
+@using Microsoft.AspNetCore.Components.Authorization
+@using Microsoft.AspNetCore.Identity
+
+@inject IPostData postData
+@inject IUserStore<User> userStore
+
+<div class="flex items-center rounded-lg rounded-b-none border p-4 shadow-lg">
+    <div class="flex-[5] mr-auto pr-12">
+        <div class="mb-4 flex justify-between text-xl font-bold">
+            <div class="flex items-center">
+                <span class="mr-4 flex h-8 w-8 items-center justify-center rounded-full bg-theme text-center text-white">@Post!.User!.Username![0]</span>
+                    @Post.User.Username
+            </div>
+            <AuthorizeView Context="user">
+                @if (user.User.Identity!.Name == Post.User.Username)
+                {
+                    <button class="rounded-full bg-red-500 px-2 py-1 text-center text-sm text-white" @onclick="Delete">Delete</button>
+                    <button class="rounded-full bg-theme px-2 py-1 text-center text-sm text-white" @onclick="() => { editing = true; }">Edit</button>
+                }
+            </AuthorizeView>
+        </div>
+        <div class="px-2">
+            @if (editing)
+            {
+                <textarea class="ring-offset-2 mx-4 mb-4 mt-2 w-full rounded-lg border border-gray-600 p-4 outline-none transition focus:ring-4 focus:ring-theme/50" @bind="Post!.Text" placeholder="Share your experiences..."></textarea>
+                <button class="mr-4 rounded-full bg-theme px-4 py-2 text-center text-white" @onclick="Edit">Post</button>
+                <button class="px-4 py-2 text-center text-theme" @onclick="() => { editing = false; }">Cancel</button>
+            }
+            else
+            {
+                @Post.Text
+            }
+        </div>
+    </div>
+</div>
+<div class="border-t-0 mb-8 rounded-b-lg border">
+    @foreach (var response in Post.Responses!)
+    {
+        @if (response is not null)
+        {
+            <div class="border-b px-4 py-2">
+                <div class="flex flex-col">
+                    <div class="mr-4 flex items-center">
+                        <span class="mr-4 flex h-8 w-8 items-center justify-center rounded-full bg-theme text-center text-white">@Post!.User!.Username![0]</span>
+                        @Post.User.Username
+                    </div>
+
+                    <AuthorizeView Context="user">
+                        @if (user.User.Identity!.Name == Post.User.Username)
+                        {
+                            <button class="rounded-full bg-red-500 px-2 py-1 text-center text-sm text-white" @onclick="() => DeleteReply(response)">Delete</button>
+                        }
+                    </AuthorizeView>
+                </div>
+                <div>
+                    @response.Text
+                </div>
+            </div>
+        }
+    }
+
+    <div>
+        <textarea class="ring-offset-2 mb-4 mt-2 w-full rounded-lg border border-gray-600 p-4 outline-none transition focus:ring-4 focus:ring-theme/50" @bind="responseText" placeholder="Reply..."></textarea>
+        <button class="mr-4 rounded-full bg-theme px-4 py-2 text-center text-white" @onclick="Reply">Reply</button>
+    </div>
+</div>
+
+@code {
+    [CascadingParameter]
+    public Task<AuthenticationState>? AuthState { get; set; }
+    [Parameter]
+    public Post? Post { get; set; }
+    [Parameter]
+    public EventCallback<Post> OnDelete { get; set; }
+    [Parameter]
+    public EventCallback<Post> OnEdit { get; set; }
+
+    private bool editing;
+    private string? responseText;
+
+    private async Task Edit()
+    {
+        await postData.UpdatePost(Post!);
+        editing = false;
+        await OnDelete.InvokeAsync(Post);
+    }
+
+    private async Task Delete()
+    {
+        await postData.DeletePost(Post!);
+        await OnDelete.InvokeAsync(Post);
+    }
+
+    private async Task DeleteReply(Response reply)
+    {
+        await postData.DeleteResponse(reply);
+        Post!.Responses!.Remove(reply);
+    }
+
+    private async Task Reply()
+    {
+        var auth = await AuthState!;
+        var user = await userStore.FindByNameAsync(auth.User.Identity!.Name!, default);
+
+        var response = new Response()
+            {
+                Text = responseText,
+                UserId = user!.Id
+            };
+
+        await postData.ReplyToPost(Post!, response);
+
+        responseText = "";
+
+        Post!.Responses ??= [];
+        Post.Responses.Add(response);
+    }
+}

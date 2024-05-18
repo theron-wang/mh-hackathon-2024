@@ -9,6 +9,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DataAccess", "DataAccess\Da
 EndProject
 Project("{00D1A9C2-B5F0-4AF3-8072-F6C62B433612}") = "EducationDB", "EducationDB\EducationDB.sqlproj", "{768CA2C2-8C53-450F-BD51-35C8577DB63F}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DataValidation", "DataValidation\DataValidation.csproj", "{BACA302F-9EF8-4763-AFCC-CDDD00108369}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -29,6 +31,10 @@ Global
 		{768CA2C2-8C53-450F-BD51-35C8577DB63F}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{768CA2C2-8C53-450F-BD51-35C8577DB63F}.Release|Any CPU.Build.0 = Release|Any CPU
 		{768CA2C2-8C53-450F-BD51-35C8577DB63F}.Release|Any CPU.Deploy.0 = Release|Any CPU
+		{BACA302F-9EF8-4763-AFCC-CDDD00108369}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{BACA302F-9EF8-4763-AFCC-CDDD00108369}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{BACA302F-9EF8-4763-AFCC-CDDD00108369}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{BACA302F-9EF8-4763-AFCC-CDDD00108369}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

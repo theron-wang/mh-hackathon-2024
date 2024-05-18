@@ -7,23 +7,42 @@ public class PostData(IDatabase dataAccess) : IPostData
 
     public Task<List<Post>> GetPosts()
     {
-        return _dataAccess.GetAsync<Post, Post, Response, User>("spPosts_GetAll", new { }, (post, response, user) =>
+        var dictionary = new Dictionary<int, Post>();
+
+        return _dataAccess.GetAsync<Post, Post, Response, User, Tag>("spPosts_GetAll", new { }, (post, response, user, tag) =>
         {
+            if (dictionary.TryGetValue(post.Id, out var existingPost))
+            {
+                existingPost.Responses!.Add(response);
+                return existingPost;
+            }
             post.User = user;
-            post.Responses ??= [];
+            post.Responses = [];
             post.Responses.Add(response);
+            post.User.Industry = tag;
+
+            dictionary[post.Id] = post;
+
             return post;
         });
     }
 
     public async Task<Post?> GetPost(int id)
     {
-        return (await _dataAccess.GetAsync<Post, Post, Response, User>("spPosts_GetById", new { Id = id }, (post, response, user) =>
+        Post? p = null;
+
+        return (await _dataAccess.GetAsync<Post, Post, Response, User, Tag>("spPosts_GetById", new { Id = id }, (post, response, user, tag) =>
         {
-            post.User = user;
-            post.Responses ??= [];
-            post.Responses.Add(response);
-            return post;
+            if (post is null)
+            {
+                p = post;
+            }
+
+            p!.User = user;
+            p.User.Industry = tag;
+            p.Responses ??= [];
+            p.Responses.Add(response);
+            return p;
         })).FirstOrDefault();
     }
 

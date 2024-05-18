@@ -1,0 +1,76 @@
+﻿@page "/users/sign-in"
+
+@using DataAccess.Data
+@using DataAccess.Models
+@using DataValidation
+@using Microsoft.AspNetCore.Identity
+
+@inject NavigationManager navManager
+@inject IPasswordHasher passwordHasher
+
+@inject IUserStore<User> userStore
+@inject SignInManager<User> signInManager
+
+<div class="flex p-8">
+    <div class="flex-1 rounded-lg border p-8 shadow-lg">
+        <h1 class="mb-4 text-3xl">Sign In</h1>
+        @if (fail)
+        {
+            <div class="mb-4 rounded-lg border border-red-900 bg-red-100 p-2 text-red-900">
+                Username or password is incorrect.
+            </div>
+        }
+
+        <EditForm method="post" FormName="signin" Model="Model" OnValidSubmit="Login" Enhance>
+            <DataAnnotationsValidator />
+
+            <div class="mb-4">
+                <label for="username">Username</label>
+                <InputText class="ring-offset-2 mt-2 w-full rounded-full border border-gray-600 p-4 outline-none transition focus:ring-4 focus:ring-theme/50"
+                    @bind-Value="Model.Username" id="username" />
+            </div>
+            <div class="mb-4">
+                <label for="password">Password</label>
+                <InputText class="ring-offset-2 mt-2 w-full rounded-full border border-gray-600 p-4 outline-none transition focus:ring-4 focus:ring-theme/50"
+                           @bind-Value="Model.Password" id="password" type="password" />
+            </div>
+            <div class="mb-4">
+                <label>
+                    <InputCheckbox class="mr-2 w-8" @bind-Value="Model.RememberMe" />
+                    Remember me
+                </label>
+            </div>
+            <div class="mb-4">
+                <button class="my-auto w-full rounded-full bg-theme px-4 py-2 text-center text-white" type="submit">Sign In</button>
+            </div>
+        </EditForm>
+    </div>
+    <div class="mx-8 w-0 border"></div>
+    <div class="flex-1 flex flex-col rounded-lg border p-8 shadow-lg">
+        <h2 class="mb-4 text-lg">New to ReSearch.ly?</h2>
+        <a href="/users/sign-up" class="my-auto w-full rounded-full bg-theme px-4 py-2 text-center text-white">Sign up now</a>
+    
+        <img src="/logo.png" class="mx-auto mt-8 w-80" />
+    </div>
+</div>
+
+@code {
+    private bool fail;
+
+    [SupplyParameterFromForm(FormName = "signin")]
+    public SignInModel Model { get; set; } = new();
+
+    private async Task Login()
+    {
+        var user = await userStore.FindByNameAsync(Model.Username!, default);
+
+        if (user == null || !passwordHasher.VerifyHashedPassword(user.PasswordHash!, Model.Password!))
+        {
+            fail = true;
+            return;
+        }
+
+        await signInManager.SignInAsync(user, Model.RememberMe);
+        navManager.NavigateTo("/", true);
+    }
+}

@@ -1,0 +1,26 @@
+﻿@using DataAccess.Models
+<div class="mb-8 flex items-center rounded-lg border p-4 shadow-lg">
+    <div class="flex-[5] mr-auto pr-12">
+        <div class="mb-4 text-xl font-bold">
+            <a href="@Program?.Link">@Program?.Name</a>
+        </div>
+        <div>
+            @Program?.Description
+        </div>
+    </div>
+    <div class="flex-1">
+        <div class="font-bold">
+            Info
+        </div>
+        <div>
+            <div>@Program?.Location</div>
+            <div>Cost: $@Program?.Cost</div>
+            <div>Grades: @string.Join(", ", Program!.Grades!)</div>
+        </div>
+    </div>
+</div>
+
+@code {
+    [Parameter]
+    public SummerProgram? Program { get; set; }
+}
