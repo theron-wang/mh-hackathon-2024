@@ -1,0 +1,6 @@
+﻿CREATE TABLE [dbo].[Responses]
+(
+	[Id] INT NOT NULL PRIMARY KEY IDENTITY,
+	[UserId] INT NOT NULL,
+	[Text] NTEXT NOT NULL
+)
