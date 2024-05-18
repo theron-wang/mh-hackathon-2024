@@ -7,7 +7,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\MHHackathon2024.Client\MHHackathon2024.Client.csproj" />
+    <ProjectReference Include="..\..\DataAccess\DataAccess.csproj" />
     <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.Server" Version="8.0.3" />
   </ItemGroup>
 

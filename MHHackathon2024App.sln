@@ -3,9 +3,11 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.9.34723.18
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MHHackathon2024", "MHHackathon2024\MHHackathon2024\MHHackathon2024.csproj", "{E9DD25BA-033E-40D2-88DF-3E90B4032ED0}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MHHackathon2024", "MHHackathon2024\MHHackathon2024\MHHackathon2024.csproj", "{E9DD25BA-033E-40D2-88DF-3E90B4032ED0}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MHHackathon2024.Client", "MHHackathon2024\MHHackathon2024.Client\MHHackathon2024.Client.csproj", "{A1036232-299C-4583-9E2C-E14D9DB4430B}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DataAccess", "DataAccess\DataAccess.csproj", "{7BB16F53-86E2-4EED-ADEE-CF15632E5B8F}"
+EndProject
+Project("{00D1A9C2-B5F0-4AF3-8072-F6C62B433612}") = "EducationDB", "EducationDB\EducationDB.sqlproj", "{768CA2C2-8C53-450F-BD51-35C8577DB63F}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -17,10 +19,16 @@ Global
 		{E9DD25BA-033E-40D2-88DF-3E90B4032ED0}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{E9DD25BA-033E-40D2-88DF-3E90B4032ED0}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{E9DD25BA-033E-40D2-88DF-3E90B4032ED0}.Release|Any CPU.Build.0 = Release|Any CPU
-		{A1036232-299C-4583-9E2C-E14D9DB4430B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{A1036232-299C-4583-9E2C-E14D9DB4430B}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{A1036232-299C-4583-9E2C-E14D9DB4430B}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{A1036232-299C-4583-9E2C-E14D9DB4430B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{7BB16F53-86E2-4EED-ADEE-CF15632E5B8F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7BB16F53-86E2-4EED-ADEE-CF15632E5B8F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7BB16F53-86E2-4EED-ADEE-CF15632E5B8F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7BB16F53-86E2-4EED-ADEE-CF15632E5B8F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{768CA2C2-8C53-450F-BD51-35C8577DB63F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{768CA2C2-8C53-450F-BD51-35C8577DB63F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{768CA2C2-8C53-450F-BD51-35C8577DB63F}.Debug|Any CPU.Deploy.0 = Debug|Any CPU
+		{768CA2C2-8C53-450F-BD51-35C8577DB63F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{768CA2C2-8C53-450F-BD51-35C8577DB63F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{768CA2C2-8C53-450F-BD51-35C8577DB63F}.Release|Any CPU.Deploy.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
